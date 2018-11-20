@@ -1,4 +1,5 @@
 import random as rnd
+import numpy
 
 ALPHA = 0.1
 EPS = 0.0001
@@ -14,28 +15,30 @@ def diff(f, p):
 def grad(f, *args):
     ort = []
     for i, a in enumerate(args):
-        temp = list(args)
-        ort.append(diff(lambda x: f(*(temp[:i]+[(lambda x1: x1)(x), ]+temp[i+1:])), args[i]))
+        ort.append(diff(lambda x: f(*(args[:i]+(x, )+args[i+1:])), args[i]))
     return tuple(ort)
 
 
 def minimum(f, *args):
-    temp = list(args)
-    g = grad(f, *temp)
+    point = list(args)
+    gr = grad(f, *point)
     k = 1
-    while sum(g) > EPS or k < TIMES:
-        temp = [a[0] - ALPHA * (a[1] + rnd.random()*a[1]*ALPHA) for a in zip(temp, g)]
-        g = grad(f, *temp)
+    while sum(gr) > EPS or k < TIMES:
+        point = [p - ALPHA * (g + rnd.random()*g*ALPHA) for p, g in zip(point, gr)]
+        gr = grad(f, *point)
         k = k + 1
-    return temp
+    return point
 
 
 def maximum(f, *args):
-    temp = list(args)
-    g = grad(f, *temp)
+    point = list(args)
+    gr = grad(f, *point)
     k = 1
-    while sum(g) > EPS or k < TIMES:
-        temp = [a[0] + ALPHA * (a[1] + rnd.random()*a[1]*ALPHA) for a in zip(temp, g)]
-        g = grad(f, *temp)
+    while sum(gr) > EPS or k < TIMES:
+        point = [p + ALPHA * (g + rnd.random()*g*ALPHA) for p, g in zip(point, gr)]
+        gr = grad(f, *point)
         k = k + 1
-    return temp
+    return point
+
+
+print(maximum(numpy.cos, 4))
