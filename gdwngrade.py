@@ -1,7 +1,7 @@
 import random as rnd
 import numpy
 
-ALPHA = 0.1
+ALPHA = 0.001
 EPS = 0.0001
 TIMES = 1000
 
@@ -27,7 +27,7 @@ def minimum(f, *args):
         point = [p - ALPHA * (g + rnd.random()*g*ALPHA) for p, g in zip(point, gr)]
         gr = grad(f, *point)
         k = k + 1
-    return point
+    return f(*point), tuple(point)
 
 
 def maximum(f, *args):
@@ -38,7 +38,7 @@ def maximum(f, *args):
         point = [p + ALPHA * (g + rnd.random()*g*ALPHA) for p, g in zip(point, gr)]
         gr = grad(f, *point)
         k = k + 1
-    return point
+    return f(*point), tuple(point)
 
 
 print(maximum(numpy.cos, 4))
